@@ -1,0 +1,4 @@
+#!/bin/bash
+# PocketBase executable placeholder
+# Download PocketBase binary from https://pocketbase.io/docs/
+echo "Download PocketBase from https://pocketbase.io/docs/ and place the executable here"
