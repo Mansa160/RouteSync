@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight, Users, Bus, Shield, Zap } from 'lucide-react';
+import { ArrowRight, Users, Bus, Shield, Zap, Eye, EyeOff, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { PassengerApp } from '@/components/passenger/PassengerApp';
 import { DriverApp } from '@/components/driver/DriverApp';
@@ -9,8 +11,42 @@ import { AdminDashboard } from '@/components/admin/AdminDashboard';
 
 type AppMode = 'home' | 'passenger' | 'driver' | 'admin';
 
+// Mock user data for demonstration
+const mockUsers = [
+  { id: 1, email: 'p@test.com', password: '123', role: 'passenger' as const },
+  { id: 2, email: 'd@test.com', password: '123', role: 'driver' as const },
+  { id: 3, email: 'a@test.com', password: '123', role: 'admin' as const },
+];
+
 const Index = () => {
   const [currentApp, setCurrentApp] = useState<AppMode>('home');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    // Simple authentication logic
+    const user = mockUsers.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+      setCurrentApp(user.role);
+    } else {
+      setError('Invalid email or password');
+    }
+  };
+
+  const handleDemoLogin = (role: 'passenger' | 'driver' | 'admin') => {
+    const user = mockUsers.find(u => u.role === role);
+    if (user) {
+      setEmail(user.email);
+      setPassword(user.password);
+      setCurrentApp(role);
+    }
+  };
 
   if (currentApp === 'passenger') {
     return (
@@ -38,206 +74,102 @@ const Index = () => {
 
   return (
     <ThemeProvider defaultTheme="light">
-      <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-background">
-        {/* Header */}
-        <header className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-primary opacity-5"></div>
-          <div className="relative container mx-auto px-6 py-16 text-center">
-            <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-strong">
+      <div className="min-h-screen bg-gradient-to-br from-background via-accent/20 to-background flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          {/* Header */}
+          <header className="text-center mb-8">
+            <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-strong">
               <Zap className="h-10 w-10 text-white" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               CommuterPro
             </h1>
-            <p className="text-xl text-muted-foreground mb-2">
+            <p className="text-lg text-muted-foreground">
               Smart Transit Platform
             </p>
-            <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
-              Revolutionizing public transportation with QR-based rewards, 
-              real-time tracking, and seamless mobile experiences
-            </p>
-          </div>
-        </header>
+          </header>
 
-        {/* App Selection Cards */}
-        <main className="container mx-auto px-6 pb-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {/* Login Form */}
+          <Card className="p-6 shadow-strong">
+            <h2 className="text-2xl font-bold text-center mb-6">Login to CommuterPro</h2>
             
-            {/* Passenger App Card */}
-            <Card className="group p-8 shadow-medium hover:shadow-strong transition-smooth cursor-pointer bg-gradient-card border-border/50 hover:border-primary/30">
-              <div 
-                onClick={() => setCurrentApp('passenger')}
-                className="text-center space-y-4"
-              >
-                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto group-hover:bg-primary/30 transition-smooth">
-                  <Users className="h-8 w-8 text-primary" />
+            <form onSubmit={handleLogin}>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Passenger App</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Scan QR codes, track buses, earn rewards, and manage your wallet
-                  </p>
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    <div className="flex items-center justify-center space-x-1">
-                      <div className="w-1.5 h-1.5 bg-success rounded-full"></div>
-                      <span>QR Journey Tracking</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-1">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                      <span>Live Bus Tracking</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-1">
-                      <div className="w-1.5 h-1.5 bg-warning rounded-full"></div>
-                      <span>Rewards Wallet</span>
-                    </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                   </div>
                 </div>
-                <Button 
-                  className="w-full bg-gradient-primary text-white group-hover:scale-105 transition-bounce"
-                >
-                  Launch Passenger App
+                
+                {error && (
+                  <div className="text-destructive text-sm text-center">{error}</div>
+                )}
+                
+                <Button type="submit" className="w-full bg-gradient-primary text-white">
+                  Login
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </div>
-            </Card>
-
-            {/* Driver App Card */}
-            <Card className="group p-8 shadow-medium hover:shadow-strong transition-smooth cursor-pointer bg-gradient-card border-border/50 hover:border-primary/30">
-              <div 
-                onClick={() => setCurrentApp('driver')}
-                className="text-center space-y-4"
-              >
-                <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto group-hover:bg-success/30 transition-smooth">
-                  <Bus className="h-8 w-8 text-success" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Driver App</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Manage shifts, share GPS location, and display QR codes for passengers
-                  </p>
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    <div className="flex items-center justify-center space-x-1">
-                      <div className="w-1.5 h-1.5 bg-success rounded-full"></div>
-                      <span>Shift Management</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-1">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                      <span>GPS Sharing</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-1">
-                      <div className="w-1.5 h-1.5 bg-warning rounded-full"></div>
-                      <span>QR Code Display</span>
-                    </div>
-                  </div>
-                </div>
+            </form>
+            
+            <div className="mt-6 pt-6 border-t border-border">
+              <h3 className="text-sm font-medium text-center mb-4">Quick Demo Access</h3>
+              <div className="grid grid-cols-3 gap-3">
                 <Button 
-                  className="w-full bg-success hover:bg-success/90 text-white group-hover:scale-105 transition-bounce"
+                  type="button" 
+                  variant="outline" 
+                  className="text-xs h-10"
+                  onClick={() => handleDemoLogin('passenger')}
                 >
-                  Launch Driver App
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  Passenger
                 </Button>
-              </div>
-            </Card>
-
-            {/* Admin Dashboard Card */}
-            <Card className="group p-8 shadow-medium hover:shadow-strong transition-smooth cursor-pointer bg-gradient-card border-border/50 hover:border-primary/30">
-              <div 
-                onClick={() => setCurrentApp('admin')}
-                className="text-center space-y-4"
-              >
-                <div className="w-16 h-16 bg-warning/20 rounded-full flex items-center justify-center mx-auto group-hover:bg-warning/30 transition-smooth">
-                  <Shield className="h-8 w-8 text-warning" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Admin Dashboard</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Manage buses, drivers, routes, users, and view comprehensive analytics
-                  </p>
-                  <div className="space-y-2 text-xs text-muted-foreground">
-                    <div className="flex items-center justify-center space-x-1">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                      <span>Fleet Management</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-1">
-                      <div className="w-1.5 h-1.5 bg-success rounded-full"></div>
-                      <span>User Analytics</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-1">
-                      <div className="w-1.5 h-1.5 bg-warning rounded-full"></div>
-                      <span>System Settings</span>
-                    </div>
-                  </div>
-                </div>
                 <Button 
-                  className="w-full bg-warning hover:bg-warning/90 text-white group-hover:scale-105 transition-bounce"
+                  type="button" 
+                  variant="outline" 
+                  className="text-xs h-10"
+                  onClick={() => handleDemoLogin('driver')}
                 >
-                  Launch Admin Panel
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  Driver
                 </Button>
-              </div>
-            </Card>
-          </div>
-
-          {/* Features Section */}
-          <div className="mt-20 text-center">
-            <h2 className="text-2xl font-bold text-foreground mb-8">Platform Features</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Zap className="h-6 w-6 text-primary" />
-                </div>
-                <h4 className="font-medium text-foreground mb-2">QR Integration</h4>
-                <p className="text-xs text-muted-foreground">Seamless boarding and exit with QR code scanning</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-success/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Users className="h-6 w-6 text-success" />
-                </div>
-                <h4 className="font-medium text-foreground mb-2">Real-time Tracking</h4>
-                <p className="text-xs text-muted-foreground">Live GPS tracking for accurate bus locations</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-warning/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Bus className="h-6 w-6 text-warning" />
-                </div>
-                <h4 className="font-medium text-foreground mb-2">Rewards System</h4>
-                <p className="text-xs text-muted-foreground">Earn points for trips and redeem for discounts</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-destructive/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Shield className="h-6 w-6 text-destructive" />
-                </div>
-                <h4 className="font-medium text-foreground mb-2">Admin Control</h4>
-                <p className="text-xs text-muted-foreground">Comprehensive management and analytics</p>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="text-xs h-10"
+                  onClick={() => handleDemoLogin('admin')}
+                >
+                  Admin
+                </Button>
               </div>
             </div>
-          </div>
-
-          {/* Tech Stack Info */}
-          <div className="mt-16 text-center">
-            <Card className="max-w-2xl mx-auto p-6 shadow-soft bg-gradient-card">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Technology Stack</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="text-center">
-                  <p className="font-medium text-primary">React + Vite</p>
-                  <p className="text-xs text-muted-foreground">Frontend</p>
-                </div>
-                <div className="text-center">
-                  <p className="font-medium text-primary">PocketBase</p>
-                  <p className="text-xs text-muted-foreground">Backend</p>
-                </div>
-                <div className="text-center">
-                  <p className="font-medium text-primary">Capacitor</p>
-                  <p className="text-xs text-muted-foreground">Mobile</p>
-                </div>
-                <div className="text-center">
-                  <p className="font-medium text-primary">Tailwind CSS</p>
-                  <p className="text-xs text-muted-foreground">Styling</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </main>
+          </Card>
+        </div>
       </div>
     </ThemeProvider>
   );

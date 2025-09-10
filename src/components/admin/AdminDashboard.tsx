@@ -21,7 +21,7 @@ export function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const stats = {
-    totalUsers: 1247,
+    totalUsers: 123,
     activeBuses: 23,
     todayTrips: 342,
     totalRewards: 15680
