@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Bus, Navigation, QrCode, Clock, MapPin } from 'lucide-react';
+import { Bus, Navigation, QrCode, Clock, MapPin, User, LogIn } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,8 @@ export function DriverApp() {
   const [isOnline, setIsOnline] = useState(false);
   const [shiftStartTime, setShiftStartTime] = useState<Date | null>(null);
   const [currentLocation, setCurrentLocation] = useState({ lat: 12.9716, lng: 77.5946 });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
 
   const busInfo = {
     busID: 'KA-01-AB-1234',
@@ -19,6 +21,22 @@ export function DriverApp() {
   const qrCodes = {
     boarding: 'BOARD_42A_001',
     exit: 'EXIT_42A_001'
+  };
+
+  const handleLogin = () => {
+    // Simulate login process
+    setIsLoggedIn(true);
+    setUserName('Rajesh Kumar');
+  };
+
+  const handleLogout = () => {
+    // Simulate logout process
+    setIsLoggedIn(false);
+    setUserName('');
+    if (isOnline) {
+      setIsOnline(false);
+      setShiftStartTime(null);
+    }
   };
 
   const toggleShift = () => {
@@ -77,7 +95,30 @@ export function DriverApp() {
 
   return (
     <div className="min-h-screen bg-background p-4">
-      {/* Header */}
+      {/* Header with Login/Profile */}
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center">
+          <Bus className="h-8 w-8 text-primary mr-2" />
+          <h1 className="text-xl font-bold text-foreground">Driver Portal</h1>
+        </div>
+        
+        {isLoggedIn ? (
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground">Hello, {userName}</span>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              <User className="h-4 w-4 mr-1" />
+              Profile
+            </Button>
+          </div>
+        ) : (
+          <Button onClick={handleLogin}>
+            <LogIn className="h-4 w-4 mr-1" />
+            Login
+          </Button>
+        )}
+      </div>
+
+      {/* Bus Info Card */}
       <Card className="p-6 shadow-soft bg-gradient-card mb-4">
         <div className="text-center mb-4">
           <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-3">
@@ -113,14 +154,21 @@ export function DriverApp() {
         
         <Button 
           onClick={toggleShift}
+          disabled={!isLoggedIn}
           className={`w-full h-12 text-lg font-semibold transition-smooth ${
             isOnline 
               ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' 
               : 'bg-gradient-primary text-white hover:scale-105'
-          }`}
+          } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
           {isOnline ? 'End Shift' : 'Start Shift'}
         </Button>
+
+        {!isLoggedIn && (
+          <p className="text-sm text-muted-foreground mt-2 text-center">
+            Please login to start your shift
+          </p>
+        )}
 
         {isOnline && (
           <div className="mt-4 p-3 bg-success/10 border border-success/20 rounded-lg">
@@ -177,7 +225,7 @@ export function DriverApp() {
           <p className="text-sm text-muted-foreground mb-2">
             Display these QR codes prominently in your bus
           </p>
-          <Button variant="outline" size="sm" className="text-primary">
+          <Button variant="outline" size="sm" className="text-primary" disabled={!isLoggedIn}>
             <QrCode className="h-4 w-4 mr-2" />
             Generate New QR Codes
           </Button>
@@ -195,6 +243,7 @@ export function DriverApp() {
             isOnline ? 'text-success' : 'text-muted-foreground'
           }`}>
             Status: {isOnline ? 'Online & Sharing GPS' : 'Offline'}
+            {!isLoggedIn && ' - Please login'}
           </p>
         </div>
       </div>

@@ -62,8 +62,8 @@ export function LiveMap() {
         </Button>
       </div>
 
-      {/* Map Placeholder */}
-      <div className="relative bg-accent/30 rounded-lg h-48 mb-4 overflow-hidden">
+      {/* Map Placeholder - Increased height from h-48 to h-64 */}
+      <div className="relative bg-accent/30 rounded-lg h-64 mb-4 overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />

@@ -17,8 +17,8 @@ export function PassengerHeader() {
             <span className="text-white font-bold text-sm">CP</span>
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-foreground">CommuterPro</h1>
-            <p className="text-xs text-muted-foreground">Smart Transit</p>
+            <h1 className="text-lg font-semibold text-foreground">RouteSync</h1>
+            <p className="text-xs text-muted-foreground">Next-Gen Transit</p>
           </div>
         </div>
         

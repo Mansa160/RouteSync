@@ -82,16 +82,16 @@ const Index = () => {
               <Zap className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-              CommuterPro
+              RouteSync
             </h1>
             <p className="text-lg text-muted-foreground">
-              Smart Transit Platform
+              Next-Gen Transit System
             </p>
           </header>
 
           {/* Login Form */}
           <Card className="p-6 shadow-strong">
-            <h2 className="text-2xl font-bold text-center mb-6">Login to CommuterPro</h2>
+            <h2 className="text-2xl font-bold text-center mb-6">Login to RouteSync</h2>
             
             <form onSubmit={handleLogin}>
               <div className="space-y-4">
